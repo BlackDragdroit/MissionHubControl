@@ -144,14 +144,15 @@ app.get('/', (req, res) => {
             
             const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
             const [isNewPhaseModalOpen, setIsNewPhaseModalOpen] = useState(false);
+            const [isImportModalOpen, setIsImportModalOpen] = useState(false);
             const [insertIndex, setInsertIndex] = useState(null);
             
             const [newProjName, setNewProjName] = useState('');
             const [newProjDesc, setNewProjDesc] = useState('');
             const [newProjColor, setNewProjColor] = useState('blue');
             const [newPhaseTitle, setNewPhaseTitle] = useState('');
+            const [importJsonText, setImportJsonText] = useState('');
 
-            // Drag-and-Drop Statusvariablen
             const [draggedGoalId, setDraggedGoalId] = useState(null);
             const [sourcePhaseId, setSourcePhaseId] = useState(null);
 
@@ -336,7 +337,7 @@ app.get('/', (req, res) => {
                 if (targetProj) saveProjectToDb(targetProj);
             };
 
-            // --- DRAG AND DROP KERNLOGIK ---
+            // --- DRAG AND DROP HANDLERS ---
             const onGoalDragStart = (goalId, currentPhaseId) => {
                 setDraggedGoalId(goalId);
                 setSourcePhaseId(currentPhaseId);
@@ -349,8 +350,6 @@ app.get('/', (req, res) => {
                 const updated = projects.map(proj => {
                     if (proj.id === activeProjectId) {
                         let matchedGoal = null;
-                        
-                        // 1. Hole das verschobene Goal-Objekt
                         proj.phases.forEach(p => {
                             if (p.id === sourcePhaseId) {
                                 matchedGoal = p.goals.find(g => g.id === draggedGoalId);
@@ -359,7 +358,6 @@ app.get('/', (req, res) => {
 
                         if (!matchedGoal) return proj;
 
-                        // 2. Entferne es aus der Urspungshase
                         let cleanPhases = proj.phases.map(p => {
                             if (p.id === sourcePhaseId) {
                                 return { ...p, goals: p.goals.filter(g => g.id !== draggedGoalId) };
@@ -367,7 +365,6 @@ app.get('/', (req, res) => {
                             return p;
                         });
 
-                        // 3. Setze es an der neuen Position ein
                         cleanPhases = cleanPhases.map(p => {
                             if (p.id === targetPhaseId) {
                                 let updatedGoals = [...p.goals];
@@ -392,6 +389,77 @@ app.get('/', (req, res) => {
                 setDraggedGoalId(null);
                 setSourcePhaseId(null);
                 if (targetProj) saveProjectToDb(targetProj);
+            };
+
+            // --- IMPORT & EXPORT OPERATIVE LOGIK ---
+            const handleExportJson = () => {
+                if (!activeProject) return;
+                // Extrahiere nur die relevanten Inhalts-Daten fuer den KI-Austausch
+                const exportData = {
+                    name: activeProject.name,
+                    description: activeProject.description,
+                    color: activeProject.color,
+                    phases: activeProject.phases.map(p => ({
+                        title: p.title,
+                        goals: p.goals.map(g => ({
+                            text: g.text,
+                            completed: g.completed,
+                            continuous: g.continuous || false
+                        }))
+                    }))
+                };
+                
+                const jsonString = JSON.stringify(exportData, null, 2);
+                navigator.clipboard.writeText(jsonString)
+                    .then(() => showNotification("JSON in Zwischenablage kopiert!"))
+                    .catch(() => showNotification("Kopieren fehlgeschlagen."));
+            };
+
+            const handleImportJsonSubmit = (e) => {
+                e.preventDefault();
+                if (!importJsonText.trim() || !activeProjectId) return;
+
+                try {
+                    const parsed = JSON.parse(importJsonText.trim());
+                    if (!parsed.phases || !Array.isArray(parsed.phases)) {
+                        throw new Error("Ungueltiges Format: 'phases' Array fehlt.");
+                    }
+
+                    // Rekonstruiere die Datenstruktur mit eindeutigen IDs fuer das UI
+                    const formattedPhases = parsed.phases.map((p, pIdx) => ({
+                        id: 'phase-' + (Date.now() + pIdx),
+                        title: p.title || 'Unbenannter Abschnitt',
+                        goals: Array.isArray(p.goals) ? p.goals.map((g, gIdx) => ({
+                            id: 'goal-' + (Date.now() + pIdx + gIdx + Math.random()),
+                            text: g.text || '',
+                            completed: !!g.completed,
+                            continuous: !!g.continuous
+                        })) : []
+                    }));
+
+                    let targetProj = null;
+                    const updated = projects.map(proj => {
+                        if (proj.id === activeProjectId) {
+                            targetProj = {
+                                ...proj,
+                                name: parsed.name || proj.name,
+                                description: parsed.description || proj.description,
+                                color: parsed.color || proj.color,
+                                phases: formattedPhases
+                            };
+                            return targetProj;
+                        }
+                        return proj;
+                    });
+
+                    setProjects(updated);
+                    setIsImportModalOpen(false);
+                    setImportJsonText('');
+                    if (targetProj) saveProjectToDb(targetProj);
+                    showNotification("Plan erfolgreich importiert!");
+                } catch (err) {
+                    alert("Fehler beim Parsen der JSON-Daten: " + err.message);
+                }
             };
 
             const activeProject = projects.find(p => p.id === activeProjectId);
@@ -460,10 +528,22 @@ app.get('/', (req, res) => {
                             </div>
                         ) : (
                             <div class="space-y-6">
-                                <button onClick={() => setActiveProjectId(null)} class="text-slate-400 hover:text-slate-200 text-xs font-semibold flex items-center gap-1.5 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg transition-all">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                                    Zurück
-                                </button>
+                                <div class="flex justify-between items-center">
+                                    <button onClick={() => setActiveProjectId(null)} class="text-slate-400 hover:text-slate-200 text-xs font-semibold flex items-center gap-1.5 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg transition-all">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                                        Zurück
+                                    </button>
+                                    
+                                    {/* INTERACTION HUB FÜR INTELLIGENTEN IMPORT/EXPORT */}
+                                    <div class="flex gap-2">
+                                        <button onClick={handleExportJson} class="text-slate-300 hover:text-white text-xs font-medium bg-slate-900 border border-slate-800 hover:border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all">
+                                            <span>📤 Plan exportieren</span>
+                                        </button>
+                                        <button onClick={() => setIsImportModalOpen(true)} class="text-blue-400 hover:text-blue-300 text-xs font-medium bg-blue-950/30 border border-blue-900/50 hover:border-blue-800 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all">
+                                            <span>📥 Plan importieren</span>
+                                        </button>
+                                    </div>
+                                </div>
 
                                 <div class="bg-gradient-to-r from-hub-card to-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl relative">
                                     <div class="flex items-center gap-3">
@@ -479,14 +559,13 @@ app.get('/', (req, res) => {
                                     {activeProject.phases.map((phase, idx) => (
                                         <React.Fragment key={phase.id}>
                                             
-                                            {/* ZWISCHEN-ABSCHNITT BUTTON SCHNITTSTELLE */}
                                             {idx > 0 && (
                                                 <div class="relative -ml-[43px] sm:-ml-[51px] flex items-center justify-center h-4 my-1 group/btn">
                                                     <div class="absolute w-full h-[1px] bg-slate-800/60 group-hover/btn:bg-blue-500/30 transition-all"></div>
                                                     <button 
                                                         onClick={() => { setInsertIndex(idx); setIsNewPhaseModalOpen(true); }}
                                                         type="button"
-                                                        class="relative z-10 w-5 h-5 rounded-full bg-slate-900 border border-slate-700 hover:border-blue-500 text-slate-400 hover:text-blue-400 text-xs flex items-center justify-center font-bold opacity-10 group-hover/btn:opacity-100 transition-all hover:scale-110"
+                                                        class="relative z-10 w-5 h-5 rounded-full bg-slate-900 border border-slate-700 hover:border-blue-500 text-slate-400 hover:text-blue-400 text-xs flex items-center justify-center font-bold opacity-10 group-hover/btn:opacity-100 transition-all scale-105 hover:scale-110"
                                                     >
                                                         +
                                                     </button>
@@ -576,6 +655,32 @@ app.get('/', (req, res) => {
                         </div>
                     )}
 
+                    {/* MODAL: INTELLIGENTER PLAN-IMPORT */}
+                    {isImportModalOpen && (
+                        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                            <form onSubmit={handleImportJsonSubmit} class="bg-hub-card border border-slate-800 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h3 class="text-lg font-bold text-slate-100">Fahrplan importieren</h3>
+                                        <p class="text-xs text-slate-400 mt-0.5">Füge hier den JSON-Code ein, den ich dir generiert habe. Der aktuelle Plan wird dadurch überschrieben.</p>
+                                    </div>
+                                </div>
+                                <textarea 
+                                    placeholder='{\n  "name": "🧬 Oxford Track",\n  "phases": [\n    {\n      "title": "Semester 3",\n      "goals": [{ "text": "Notenschnitt <= 1.5", "completed": false, "continuous": true }]\n    }\n  ]\n}'
+                                    value={importJsonText} 
+                                    onChange={(e) => setImportJsonText(e.target.value)} 
+                                    class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-slate-200 text-xs font-mono h-64 focus:outline-none focus:border-blue-500 resize-none" 
+                                    required 
+                                    autoFocus
+                                />
+                                <div class="flex gap-2 pt-1">
+                                    <button type="button" onClick={() => { setIsImportModalOpen(false); setImportJsonText(''); }} class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-sm transition-all">Abbrechen</button>
+                                    <button type="submit" class="flex-1 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-sm font-semibold transition-all">Importieren & Speichern</button>
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
                     {toast.show && (
                         <div class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-700 px-4 py-3 rounded-xl flex items-center gap-2 text-sm z-50">
                             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
@@ -610,5 +715,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Mission Control Hub läuft auf Port ${PORT}`);
+  console.log(`Mission Control Hub laeuft auf Port ${PORT}`);
 });
