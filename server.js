@@ -90,6 +90,19 @@ app.get('/', (req, res) => {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mission Control Hub</title>
+    
+    <!-- Mobilgeräte Web App Meta-Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mission Control">
+    
+    <!-- App Icons (Direkt im Code generiertes Vektor-Icon für iOS & Browser) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23111827' stroke='%233b82f6' stroke-width='4'/%3E%3Ctext y='68' x='20' font-size='55'%3E🛰️%3C/text%3E%3C/svg%3E">
+    <link class="ios-icon" rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23111827' stroke='%233b82f6' stroke-width='4'/%3E%3Ctext y='68' x='20' font-size='55'%3E🛰️%3C/text%3E%3C/svg%3E">
+    
+    <!-- Android Web App Manifest (Inline URL-Encoded für direkte Erkennung) -->
+    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Mission%20Control%20Hub%22%2C%22short_name%22%3A%22Mission%20Control%22%2C%22start_url%22%3A%22%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23090d16%22%2C%22theme_color%22%3A%22%23090d16%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org/2000%2Fsvg' viewBox%3D'0 0 100 100'%253E%253Crect width%3D'100' height%3D'100' rx%3D'24' fill%3D'%2523111827' stroke%3D'%25233b82f6' stroke-width%3D'4'%252F%253E%253Ctext y%3D'68' x%3D'20' font-size%3D'55'%253E🛰️%253C%2Ftext%3E%253C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -179,7 +192,7 @@ app.get('/', (req, res) => {
 
             const handleDeleteProject = (projId, e) => {
                 e.stopPropagation();
-                if (confirm("Projekt wirklich aus der魅力 Datenbank löschen?")) {
+                if (confirm("Projekt wirklich aus der Datenbank löschen?")) {
                     setProjects(projects.filter(p => p.id !== projId));
                     fetch('/api/projects/' + projId, { method: 'DELETE' })
                         .then(() => showNotification("Projekt gelöscht."))
@@ -310,10 +323,12 @@ app.get('/', (req, res) => {
                 <div class="flex flex-col min-h-screen">
                     <header class="border-b border-slate-800 bg-hub-card/60 backdrop-blur-md sticky top-0 z-40 px-4 py-4 sm:px-6">
                         <div class="max-w-5xl mx-auto flex justify-between items-center">
-                            <div class="flex items-center gap-3 cursor-pointer" onClick={() => setActiveProjectId(null)}>
-                                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">M</div>
+                            <div class="flex items-center gap-3 cursor-pointer group" onClick={() => setActiveProjectId(null)}>
+                                <div class="w-9 h-9 rounded-xl bg-blue-950/50 border border-blue-500/30 flex items-center justify-center text-lg shadow-lg shadow-blue-500/10 transition-all group-hover:border-blue-400">
+                                    🛰️
+                                </div>
                                 <div>
-                                    <h1 class="text-lg font-bold tracking-tight">Mission Control</h1>
+                                    <h1 class="text-lg font-bold tracking-tight group-hover:text-blue-400 transition-colors">Mission Control</h1>
                                     <p class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">PostgreSQL Cloud Sync</p>
                                 </div>
                             </div>
