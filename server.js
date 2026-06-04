@@ -69,7 +69,7 @@ app.post('/api/projects', async (req, res) => {
   }
 });
 
-// 3. Projekt löschen
+// 3. Projekt loeschen
 app.delete('/api/projects/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -77,7 +77,7 @@ app.delete('/api/projects/:id', async (req, res) => {
     res.sendStatus(200);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Fehler beim Löschen" });
+    res.status(500).json({ error: "Fehler beim Loeschen" });
   }
 });
 
@@ -119,6 +119,7 @@ app.get('/', (req, res) => {
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #090d16; }
         ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
+        .drag-zone-active { border-color: #3b82f6 !important; background-color: rgba(59, 130, 246, 0.05); }
     </style>
 </head>
 <body class="bg-hub-dark text-slate-100 min-h-screen font-sans antialiased">
@@ -141,14 +142,18 @@ app.get('/', (req, res) => {
             const [activeProjectId, setActiveProjectId] = useState(null);
             const [toast, setToast] = useState({ show: false, message: '' });
             
-            // Modal-Zustände
             const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
             const [isNewPhaseModalOpen, setIsNewPhaseModalOpen] = useState(false);
+            const [insertIndex, setInsertIndex] = useState(null);
             
             const [newProjName, setNewProjName] = useState('');
             const [newProjDesc, setNewProjDesc] = useState('');
             const [newProjColor, setNewProjColor] = useState('blue');
             const [newPhaseTitle, setNewPhaseTitle] = useState('');
+
+            // Drag-and-Drop Statusvariablen
+            const [draggedGoalId, setDraggedGoalId] = useState(null);
+            const [sourcePhaseId, setSourcePhaseId] = useState(null);
 
             useEffect(() => {
                 fetch('/api/projects')
@@ -206,9 +211,17 @@ app.get('/', (req, res) => {
                 if (!newPhaseTitle.trim() || !activeProjectId) return;
                 
                 let targetProj = null;
+                const newPhaseObj = { id: 'phase-' + Date.now(), title: newPhaseTitle.trim(), goals: [] };
+                
                 const updated = projects.map(proj => {
                     if (proj.id === activeProjectId) {
-                        targetProj = { ...proj, phases: [...proj.phases, { id: 'phase-' + Date.now(), title: newPhaseTitle.trim(), goals: [] }] };
+                        let updatedPhases = [...proj.phases];
+                        if (insertIndex !== null) {
+                            updatedPhases.splice(insertIndex, 0, newPhaseObj);
+                        } else {
+                            updatedPhases.push(newPhaseObj);
+                        }
+                        targetProj = { ...proj, phases: updatedPhases };
                         return targetProj;
                     }
                     return proj;
@@ -216,6 +229,7 @@ app.get('/', (req, res) => {
                 setProjects(updated);
                 setIsNewPhaseModalOpen(false);
                 setNewPhaseTitle('');
+                setInsertIndex(null);
                 if (targetProj) saveProjectToDb(targetProj);
             };
 
@@ -322,6 +336,64 @@ app.get('/', (req, res) => {
                 if (targetProj) saveProjectToDb(targetProj);
             };
 
+            // --- DRAG AND DROP KERNLOGIK ---
+            const onGoalDragStart = (goalId, currentPhaseId) => {
+                setDraggedGoalId(goalId);
+                setSourcePhaseId(currentPhaseId);
+            };
+
+            const onGoalDropHandler = (targetPhaseId, targetGoalId = null) => {
+                if (!draggedGoalId || !activeProjectId) return;
+
+                let targetProj = null;
+                const updated = projects.map(proj => {
+                    if (proj.id === activeProjectId) {
+                        let matchedGoal = null;
+                        
+                        // 1. Hole das verschobene Goal-Objekt
+                        proj.phases.forEach(p => {
+                            if (p.id === sourcePhaseId) {
+                                matchedGoal = p.goals.find(g => g.id === draggedGoalId);
+                            }
+                        });
+
+                        if (!matchedGoal) return proj;
+
+                        // 2. Entferne es aus der Urspungshase
+                        let cleanPhases = proj.phases.map(p => {
+                            if (p.id === sourcePhaseId) {
+                                return { ...p, goals: p.goals.filter(g => g.id !== draggedGoalId) };
+                            }
+                            return p;
+                        });
+
+                        // 3. Setze es an der neuen Position ein
+                        cleanPhases = cleanPhases.map(p => {
+                            if (p.id === targetPhaseId) {
+                                let updatedGoals = [...p.goals];
+                                if (targetGoalId) {
+                                    const targetIdx = updatedGoals.findIndex(g => g.id === targetGoalId);
+                                    updatedGoals.splice(targetIdx, 0, matchedGoal);
+                                } else {
+                                    updatedGoals.push(matchedGoal);
+                                }
+                                return { ...p, goals: updatedGoals };
+                            }
+                            return p;
+                        });
+
+                        targetProj = { ...proj, phases: cleanPhases };
+                        return targetProj;
+                    }
+                    return proj;
+                });
+
+                setProjects(updated);
+                setDraggedGoalId(null);
+                setSourcePhaseId(null);
+                if (targetProj) saveProjectToDb(targetProj);
+            };
+
             const activeProject = projects.find(p => p.id === activeProjectId);
 
             return (
@@ -403,40 +475,69 @@ app.get('/', (req, res) => {
                                     </div>
                                 </div>
 
-                                <div class="relative border-l-2 border-slate-800 ml-4 pl-6 sm:pl-8 space-y-8 mt-10">
-                                    {activeProject.phases.map((phase) => (
-                                        <div key={phase.id} class="relative group">
-                                            <div class="absolute -left-[33px] sm:-left-[41px] top-1.5 w-4 h-4 rounded-full border-2 border-blue-500 bg-hub-dark flex items-center justify-center"><div class="w-1.5 h-1.5 bg-blue-500 rounded-full"></div></div>
-                                            <div class="flex items-center justify-between mb-4">
-                                                <input type="text" value={phase.title} onChange={(e) => handleUpdatePhaseTitle(activeProject.id, phase.id, e.target.value)} class="bg-transparent font-bold text-slate-200 text-base border-b border-transparent focus:border-blue-500 focus:outline-none" />
-                                                <button onClick={() => handleDeletePhase(activeProject.id, phase.id)} class="text-slate-500 hover:text-rose-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-                                            </div>
+                                <div class="relative border-l-2 border-slate-800 ml-4 pl-6 sm:pl-8 mt-10 space-y-3">
+                                    {activeProject.phases.map((phase, idx) => (
+                                        <React.Fragment key={phase.id}>
+                                            
+                                            {/* ZWISCHEN-ABSCHNITT BUTTON SCHNITTSTELLE */}
+                                            {idx > 0 && (
+                                                <div class="relative -ml-[43px] sm:-ml-[51px] flex items-center justify-center h-4 my-1 group/btn">
+                                                    <div class="absolute w-full h-[1px] bg-slate-800/60 group-hover/btn:bg-blue-500/30 transition-all"></div>
+                                                    <button 
+                                                        onClick={() => { setInsertIndex(idx); setIsNewPhaseModalOpen(true); }}
+                                                        type="button"
+                                                        class="relative z-10 w-5 h-5 rounded-full bg-slate-900 border border-slate-700 hover:border-blue-500 text-slate-400 hover:text-blue-400 text-xs flex items-center justify-center font-bold opacity-10 group-hover/btn:opacity-100 transition-all hover:scale-110"
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            )}
 
-                                            <ul class="space-y-2">
-                                                {phase.goals.map((goal) => (
-                                                    <li key={goal.id} class={'flex items-center justify-between p-3 rounded-xl border ' + (goal.completed ? 'bg-slate-950/40 border-slate-950/60 text-slate-500' : 'bg-hub-card border-slate-800/80 text-slate-200')}>
-                                                        <div class="flex items-center gap-3 flex-1">
-                                                            <input type="checkbox" checked={goal.completed} onChange={() => handleToggleGoal(activeProject.id, phase.id, goal.id)} class={'w-4.5 h-4.5 text-blue-600 bg-slate-950 focus:ring-0 cursor-pointer ' + (goal.continuous ? 'rounded-full border-2 border-blue-500' : 'rounded')} />
-                                                            <input type="text" value={goal.text} onChange={(e) => handleUpdateGoalText(activeProject.id, phase.id, goal.id, e.target.value)} class={'bg-transparent focus:outline-none text-xs sm:text-sm flex-1 ' + (goal.completed ? 'line-through' : '')} />
-                                                            {goal.continuous && <span class="text-[10px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded-full shrink-0">🔄 Fortlaufend</span>}
-                                                        </div>
-                                                        <button onClick={() => handleDeleteGoal(activeProject.id, phase.id, goal.id)} class="text-slate-600 hover:text-rose-500"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                            <PhaseGoalForm onAddGoal={(text, isContinuous) => handleAddGoal(activeProject.id, phase.id, text, isContinuous)} />
-                                        </div>
+                                            <div 
+                                                class="relative group pb-4 transition-all"
+                                                onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('drag-zone-active'); }}
+                                                onDragLeave={(e) => e.currentTarget.classList.remove('drag-zone-active')}
+                                                onDrop={(e) => { e.preventDefault(); e.currentTarget.classList.remove('drag-zone-active'); onGoalDropHandler(phase.id); }}
+                                            >
+                                                <div class="absolute -left-[33px] sm:-left-[41px] top-1.5 w-4 h-4 rounded-full border-2 border-blue-500 bg-hub-dark flex items-center justify-center"><div class="w-1.5 h-1.5 bg-blue-500 rounded-full"></div></div>
+                                                <div class="flex items-center justify-between mb-4">
+                                                    <input type="text" value={phase.title} onChange={(e) => handleUpdatePhaseTitle(activeProject.id, phase.id, e.target.value)} class="bg-transparent font-bold text-slate-200 text-base border-b border-transparent focus:border-blue-500 focus:outline-none" />
+                                                    <button onClick={() => handleDeletePhase(activeProject.id, phase.id)} class="text-slate-500 hover:text-rose-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                                                </div>
+
+                                                <ul class="space-y-2 min-h-[20px]">
+                                                    {phase.goals.map((goal) => (
+                                                        <li 
+                                                            key={goal.id}
+                                                            draggable
+                                                            onDragStart={() => onGoalDragStart(goal.id, phase.id)}
+                                                            onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                                                            onDrop={(e) => { e.preventDefault(); e.stopPropagation(); onGoalDropHandler(phase.id, goal.id); }}
+                                                            class={'flex items-center justify-between p-3 rounded-xl border cursor-grab active:cursor-grabbing transition-all ' + (goal.completed ? 'bg-slate-950/40 border-slate-950/60 text-slate-500' : 'bg-hub-card border-slate-800/80 text-slate-200 hover:border-slate-700')}
+                                                        >
+                                                            <div class="flex items-center gap-3 flex-1">
+                                                                <div class="text-slate-600 text-[10px] tracking-widest select-none hidden sm:block">☰</div>
+                                                                <input type="checkbox" checked={goal.completed} onChange={() => handleToggleGoal(activeProject.id, phase.id, goal.id)} class={'w-4.5 h-4.5 text-blue-600 bg-slate-950 focus:ring-0 cursor-pointer ' + (goal.continuous ? 'rounded-full border-2 border-blue-500' : 'rounded')} />
+                                                                <input type="text" value={goal.text} onChange={(e) => handleUpdateGoalText(activeProject.id, phase.id, goal.id, e.target.value)} class={'bg-transparent focus:outline-none text-xs sm:text-sm flex-1 ' + (goal.completed ? 'line-through' : '')} />
+                                                                {goal.continuous && <span class="text-[10px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded-full shrink-0">🔄 Fortlaufend</span>}
+                                                            </div>
+                                                            <button onClick={() => handleDeleteGoal(activeProject.id, phase.id, goal.id)} class="text-slate-600 hover:text-rose-500"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                                <PhaseGoalForm onAddGoal={(text, isContinuous) => handleAddGoal(activeProject.id, phase.id, text, isContinuous)} />
+                                            </div>
+                                        </React.Fragment>
                                     ))}
                                 </div>
 
-                                <button onClick={() => setIsNewPhaseModalOpen(true)} class="w-full py-3.5 border-2 border-dashed border-slate-800 bg-hub-card/20 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 flex items-center justify-center gap-2 transition-all">
-                                    <span>Abschnitt (Stunde/Woche/Monat) hinzufügen</span>
+                                <button onClick={() => { setInsertIndex(null); setIsNewPhaseModalOpen(true); }} class="w-full py-3.5 border-2 border-dashed border-slate-800 bg-hub-card/20 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 flex items-center justify-center gap-2 transition-all mt-4">
+                                    <span>Abschnitt ganz am Ende hinzufügen</span>
                                 </button>
                             </div>
                         )}
                     </main>
 
-                    {/* MODAL: NEUES PROJEKT ANLEGEN */}
                     {isNewProjectModalOpen && (
                         <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                             <form onSubmit={handleCreateProject} class="bg-hub-card border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4">
@@ -451,11 +552,12 @@ app.get('/', (req, res) => {
                         </div>
                     )}
 
-                    {/* CUSTOM POPUP: NEUEN ZEITABSCHNITT ANLEGEN */}
                     {isNewPhaseModalOpen && (
                         <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                             <form onSubmit={handleCreatePhaseSubmit} class="bg-hub-card border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-                                <h3 class="text-lg font-bold text-slate-100">Neuen Zeitabschnitt anlegen</h3>
+                                <h3 class="text-lg font-bold text-slate-100">
+                                    {insertIndex !== null ? 'Abschnitt dazwischenschieben' : 'Neuen Zeitabschnitt anlegen'}
+                                </h3>
                                 <p class="text-xs text-slate-400">Verwende beliebige Abschnitte (z.B. Semester 3, Woche 12, 10:00 Uhr, Montag).</p>
                                 <input 
                                     type="text" 
@@ -467,7 +569,7 @@ app.get('/', (req, res) => {
                                     autoFocus
                                 />
                                 <div class="flex gap-2 pt-2">
-                                    <button type="button" onClick={() => { setIsNewPhaseModalOpen(false); setNewPhaseTitle(''); }} class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-sm transition-all">Abbrechen</button>
+                                    <button type="button" onClick={() => { setIsNewPhaseModalOpen(false); setNewPhaseTitle(''); setInsertIndex(null); }} class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-sm transition-all">Abbrechen</button>
                                     <button type="submit" class="flex-1 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-sm font-semibold transition-all">Hinzufügen</button>
                                 </div>
                             </form>
