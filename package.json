@@ -1,0 +1,16 @@
+{
+  "name": "mission-control-hub",
+  "version": "1.1.0",
+  "description": "Advanced Multi-Project Dashboard connected to PostgreSQL on Coolify",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "pg": "^8.11.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
