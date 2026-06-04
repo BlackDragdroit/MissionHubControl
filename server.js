@@ -1,18 +1,15 @@
 const express = require('express');
 const { Pool } = require('pg');
-const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Verbindung zur PostgreSQL-Datenbank (Internes Coolify-Netzwerk benötigt kein SSL)
+// Verbindung zur PostgreSQL-Datenbank
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_SSL === 'true' 
-    ? { rejectUnauthorized: false } 
-    : false
+  ssl: process.env.DATABASE_SSL === 'true' ? { rejectUnauthorized: false } : false
 });
 
 // Datenbank beim Start initialisieren
@@ -36,12 +33,51 @@ async function initDb() {
     client.release();
   }
 }
-
 initDb();
+
+// --- PWA SPEZIFISCHE ROUTEN (Zwingend notwendig für Icon ohne Chrome-Badge) ---
+
+// 1. Das App-Icon als echte SVG-Ausgabe
+app.get('/icon.svg', (req, res) => {
+  res.setHeader('Content-Type', 'image/svg+xml');
+  res.send(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="24" fill="#111827" stroke="#3b82f6" stroke-width="4"/><text y="68" x="20" font-size="55">🛰️</text></svg>`);
+});
+
+// 2. Das offizielle Web-App Manifest
+app.get('/manifest.json', (req, res) => {
+  res.json({
+    name: "Mission Control Hub",
+    short_name: "Mission Control",
+    start_url: "/",
+    display: "standalone",
+    background_color: "#090d16",
+    theme_color: "#090d16",
+    icons: [
+      {
+        src: "/icon.svg",
+        sizes: "any",
+        type: "image/svg+xml",
+        purpose: "any maskable"
+      }
+    ]
+  });
+});
+
+// 3. Der Service Worker (Trickst Chrome aus, damit es eine native App generiert)
+app.get('/sw.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript');
+  res.send(`
+    self.addEventListener('install', (e) => self.skipWaiting());
+    self.addEventListener('fetch', (e) => {
+      // Erlaubt der App, Daten live aus dem Netz/der DB zu ziehen
+      e.respondWith(fetch(e.request));
+    });
+  `);
+});
+
 
 // --- API ENDPUNKTE ---
 
-// 1. Alle Projekte laden
 app.get('/api/projects', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM projects ORDER BY updated_at DESC');
@@ -52,7 +88,6 @@ app.get('/api/projects', async (req, res) => {
   }
 });
 
-// 2. Projekt speichern oder updaten
 app.post('/api/projects', async (req, res) => {
   const { id, name, description, color, phases } = req.body;
   try {
@@ -69,7 +104,6 @@ app.post('/api/projects', async (req, res) => {
   }
 });
 
-// 3. Projekt löschen
 app.delete('/api/projects/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -81,7 +115,7 @@ app.delete('/api/projects/:id', async (req, res) => {
   }
 });
 
-// --- FRONTEND AUSLIEFERUNG (EINGEBETTETES REACT) ---
+// --- FRONTEND AUSLIEFERUNG ---
 app.get('/', (req, res) => {
   res.send(`
 <!DOCTYPE html>
@@ -91,17 +125,13 @@ app.get('/', (req, res) => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mission Control Hub</title>
     
-    <!-- Mobilgeräte Web App Meta-Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Mission Control">
     
-    <!-- App Icons (Direkt im Code generiertes Vektor-Icon für iOS & Browser) -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23111827' stroke='%233b82f6' stroke-width='4'/%3E%3Ctext y='68' x='20' font-size='55'%3E🛰️%3C/text%3E%3C/svg%3E">
-    <link class="ios-icon" rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23111827' stroke='%233b82f6' stroke-width='4'/%3E%3Ctext y='68' x='20' font-size='55'%3E🛰️%3C/text%3E%3C/svg%3E">
-    
-    <!-- Android Web App Manifest (Inline URL-Encoded für direkte Erkennung) -->
-    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Mission%20Control%20Hub%22%2C%22short_name%22%3A%22Mission%20Control%22%2C%22start_url%22%3A%22%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23090d16%22%2C%22theme_color%22%3A%22%23090d16%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org/2000%2Fsvg' viewBox%3D'0 0 100 100'%253E%253Crect width%3D'100' height%3D'100' rx%3D'24' fill%3D'%2523111827' stroke%3D'%25233b82f6' stroke-width%3D'4'%252F%253E%253Ctext y%3D'68' x%3D'20' font-size%3D'55'%253E🛰️%253C%2Ftext%3E%253C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <link rel="apple-touch-icon" href="/icon.svg">
+    <link rel="manifest" href="/manifest.json">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -150,6 +180,11 @@ app.get('/', (req, res) => {
             const [newProjColor, setNewProjColor] = useState('blue');
 
             useEffect(() => {
+                // Registriere den Service Worker für echtes PWA-Icon ohne Badge
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/sw.js').catch(err => console.error(err));
+                }
+
                 fetch('/api/projects')
                     .then(res => res.json())
                     .then(data => setProjects(data))
