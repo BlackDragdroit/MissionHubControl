@@ -179,7 +179,7 @@ app.get('/', (req, res) => {
 
             const handleDeleteProject = (projId, e) => {
                 e.stopPropagation();
-                if (confirm("Projekt wirklich aus der Datenbank löschen?")) {
+                if (confirm("Projekt wirklich aus der魅力 Datenbank löschen?")) {
                     setProjects(projects.filter(p => p.id !== projId));
                     fetch('/api/projects/' + projId, { method: 'DELETE' })
                         .then(() => showNotification("Projekt gelöscht."))
@@ -333,7 +333,7 @@ app.get('/', (req, res) => {
                                     <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
                                     <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white relative z-10">Zentrales Kontrollzentrum</h2>
                                     <p class="text-sm text-slate-400 max-w-xl relative z-10 font-normal">Deine Zeitachsen werden live in PostgreSQL gesichert und geräteübergreifend synchronisiert.</p>
-                                }</div>
+                                </div>
 
                                 <div class="space-y-4">
                                     <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Projekte in der Cloud</h3>
@@ -350,7 +350,7 @@ app.get('/', (req, res) => {
                                                         <div class="flex justify-between items-start">
                                                             <h4 class="text-lg font-bold text-slate-100 group-hover:text-blue-400 transition-colors">{proj.name}</h4>
                                                             <button onClick={(e) => handleDeleteProject(proj.id, e)} class="text-slate-500 hover:text-rose-500 p-1 rounded opacity-0 group-hover:opacity-100 transition-all">
-                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138(21)H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                                             </button>
                                                         </div>
                                                         <p class="text-xs text-slate-400 line-clamp-2">{proj.description}</p>
