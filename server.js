@@ -295,15 +295,7 @@ app.get('/', (req, res) => {
                 let targetProj = null;
                 const updated = projects.map(proj => {
                     if (proj.id === projId) {
-                        targetProj = {
-                            ...proj,
-                            phases: proj.phases.map(p => {
-                                if (p.id === phaseId) {
-                                    return { ...p, goals: p.goals.filter(g => g.id !== goalId) };
-                                }
-                                return p;
-                            })
-                        };
+                        targetProj = { ...proj, phases: proj.phases.map(p => { if (p.id === phaseId) { return { ...p, goals: p.goals.filter(g => g.id !== goalId) }; } return p; }) };
                         return targetProj;
                     }
                     return proj;
@@ -341,7 +333,7 @@ app.get('/', (req, res) => {
                                     <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
                                     <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white relative z-10">Zentrales Kontrollzentrum</h2>
                                     <p class="text-sm text-slate-400 max-w-xl relative z-10 font-normal">Deine Zeitachsen werden live in PostgreSQL gesichert und geräteübergreifend synchronisiert.</p>
-                                </div>
+                                }</div>
 
                                 <div class="space-y-4">
                                     <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Projekte in der Cloud</h3>
@@ -358,14 +350,14 @@ app.get('/', (req, res) => {
                                                         <div class="flex justify-between items-start">
                                                             <h4 class="text-lg font-bold text-slate-100 group-hover:text-blue-400 transition-colors">{proj.name}</h4>
                                                             <button onClick={(e) => handleDeleteProject(proj.id, e)} class="text-slate-500 hover:text-rose-500 p-1 rounded opacity-0 group-hover:opacity-100 transition-all">
-                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138(21)H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                                             </button>
                                                         </div>
                                                         <p class="text-xs text-slate-400 line-clamp-2">{proj.description}</p>
                                                     </div>
                                                     <div class="mt-6 space-y-1.5">
                                                         <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
-                                                            <div class={`h-full ${theme.solid} transition-all duration-500`} style={{ width: `${progressPercent}%` }}></div>
+                                                            <div class={'h-full ' + theme.solid + ' transition-all duration-500'} style={{ width: progressPercent + '%' }}></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -383,7 +375,7 @@ app.get('/', (req, res) => {
 
                                 <div class="bg-gradient-to-r from-hub-card to-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl relative">
                                     <div class="flex items-center gap-3">
-                                        <div class={`w-3.5 h-3.5 rounded-full ${COLOR_THEMES[activeProject.color]?.solid || 'bg-blue-500'}`}></div>
+                                        <div class={'w-3.5 h-3.5 rounded-full ' + (COLOR_THEMES[activeProject.color]?.solid || 'bg-blue-500')}></div>
                                         <input type="text" value={activeProject.name} onChange={(e) => {
                                             const updated = projects.map(p => p.id === activeProject.id ? { ...p, name: e.target.value } : p);
                                             setProjects(updated); saveProjectToDb({ ...activeProject, name: e.target.value });
@@ -402,10 +394,10 @@ app.get('/', (req, res) => {
 
                                             <ul class="space-y-2">
                                                 {phase.goals.map((goal) => (
-                                                    <li key={goal.id} class={`flex items-center justify-between p-3 rounded-xl border ${goal.completed ? 'bg-slate-950/40 border-slate-950/60 text-slate-500' : 'bg-hub-card border-slate-800/80 text-slate-200'}`}>
+                                                    <li key={goal.id} class={'flex items-center justify-between p-3 rounded-xl border ' + (goal.completed ? 'bg-slate-950/40 border-slate-950/60 text-slate-500' : 'bg-hub-card border-slate-800/80 text-slate-200')}>
                                                         <div class="flex items-center gap-3 flex-1">
-                                                            <input type="checkbox" checked={goal.completed} onChange={() => handleToggleGoal(activeProject.id, phase.id, goal.id)} class={`w-4.5 h-4.5 text-blue-600 bg-slate-950 focus:ring-0 cursor-pointer ${goal.continuous ? 'rounded-full border-2 border-blue-500' : 'rounded'}`} />
-                                                            <input type="text" value={goal.text} onChange={(e) => handleUpdateGoalText(activeProject.id, phase.id, goal.id, e.target.value)} class={`bg-transparent focus:outline-none text-xs sm:text-sm flex-1 ${goal.completed ? 'line-through' : ''}`} />
+                                                            <input type="checkbox" checked={goal.completed} onChange={() => handleToggleGoal(activeProject.id, phase.id, goal.id)} class={'w-4.5 h-4.5 text-blue-600 bg-slate-950 focus:ring-0 cursor-pointer ' + (goal.continuous ? 'rounded-full border-2 border-blue-500' : 'rounded')} />
+                                                            <input type="text" value={goal.text} onChange={(e) => handleUpdateGoalText(activeProject.id, phase.id, goal.id, e.target.value)} class={'bg-transparent focus:outline-none text-xs sm:text-sm flex-1 ' + (goal.completed ? 'line-through' : '')} />
                                                             {goal.continuous && <span class="text-[10px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded-full shrink-0">🔄 Fortlaufend</span>}
                                                         </div>
                                                         <button onClick={() => handleDeleteGoal(activeProject.id, phase.id, goal.id)} class="text-slate-600 hover:text-rose-500"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
@@ -430,7 +422,10 @@ app.get('/', (req, res) => {
                                 <h3 class="text-lg font-bold">Neues Projekt anlegen</h3>
                                 <input type="text" placeholder="z.B. 🧬 Bioengineering" value={newProjName} onChange={(e) => setNewProjName(e.target.value)} class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-slate-100" required />
                                 <textarea placeholder="Beschreibung..." value={newProjDesc} onChange={(e) => setNewProjDesc(e.target.value)} class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-slate-100 resize-none" />
-                                <div class="flex gap-2"><button type="button" onClick={() => setIsNewProjectModalOpen(false)} class="flex-1 py-2 bg-slate-800 rounded-xl text-sm">Abbrechen</button><button type="submit" class="flex-1 py-2 bg-blue-600 rounded-xl text-sm font-semibold">Erstellen</button></div>
+                                <div class="flex gap-2">
+                                    <button type="button" onClick={() => setIsNewProjectModalOpen(false)} class="flex-1 py-2 bg-slate-800 rounded-xl text-sm">Abbrechen</button>
+                                    <button type="submit" class="flex-1 py-2 bg-blue-600 rounded-xl text-sm font-semibold">Erstellen</button>
+                                </div>
                             </form>
                         </div>
                     )}
