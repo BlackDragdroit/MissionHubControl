@@ -259,8 +259,8 @@ app.get('/', (req, res) => {
             trash: ['M4 7h16', 'M10 11v6M14 11v6', 'M6 7l1 13a2 2 0 002 2h6a2 2 0 002-2l1-13', 'M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2'],
             back: 'M15 18l-6-6 6-6',
             close: 'M6 6l12 12M18 6L6 18',
-            export: ['M12 3v12', 'M8 7l4-4 4 4', 'M5 15v4a2 2 0 002 2h10a2 2 0 002-2v-4'],
-            import: ['M12 15V3', 'M8 11l4 4 4-4', 'M5 15v4a2 2 0 002 2h10a2 2 0 002-2v-4']
+            exportIcon: ['M12 3v12', 'M8 7l4-4 4 4', 'M5 15v4a2 2 0 002 2h10a2 2 0 002-2v-4'],
+            importIcon: ['M12 15V3', 'M8 11l4 4 4-4', 'M5 15v4a2 2 0 002 2h10a2 2 0 002-2v-4']
         };
 
         function App() {
@@ -703,11 +703,11 @@ app.get('/', (req, res) => {
 
                                     <div className="flex gap-2">
                                         <button onClick={handleExportJson} className="flex-1 sm:flex-none glass text-hub-muted hover:text-white text-xs font-medium px-3 py-2 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95">
-                                            <Icon d={ICONS.export} className="w-3.5 h-3.5" /> Exportieren
+                                            <Icon d={ICONS.exportIcon} className="w-3.5 h-3.5" /> Exportieren
                                         </button>
                                         <button onClick={() => setIsImportModalOpen(true)} className="flex-1 sm:flex-none text-xs font-medium px-3 py-2 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95"
                                             style={{ color:'#a7c1ff', background:'rgba(108,155,255,.10)', border:'1px solid rgba(108,155,255,.28)' }}>
-                                            <Icon d={ICONS.import} className="w-3.5 h-3.5" /> Importieren
+                                            <Icon d={ICONS.importIcon} className="w-3.5 h-3.5" /> Importieren
                                         </button>
                                     </div>
                                 </div>
@@ -798,7 +798,7 @@ app.get('/', (req, res) => {
                                                                     <span className="text-hub-faint text-xs tracking-tighter select-none cursor-grab hidden sm:block">⋮⋮</span>
                                                                     <input type="checkbox" checked={goal.completed} onChange={() => handleToggleGoal(activeProject.id, phase.id, goal.id)} className={'chk ' + (goal.continuous ? 'cont' : '')} />
                                                                     <input type="text" value={goal.text} onChange={(e) => handleUpdateGoalText(activeProject.id, phase.id, goal.id, e.target.value)} className={'ghost-input text-xs sm:text-sm flex-1 min-w-0 ' + (goal.completed ? 'line-through text-hub-faint' : 'text-slate-200')} />
-                                                                    {goal.continuous && <span className="font-mono2 text-[9px] px-1.5 py-0.5 rounded-full shrink-0 hidden xs:inline" style={{ color:'#a7c1ff', background:'rgba(108,155,255,.10)' }}>🔄</span>}
+                                                                    {goal.continuous && <span className="font-mono2 text-[9px] px-1.5 py-0.5 rounded-full shrink-0" style={{ color:'#a7c1ff', background:'rgba(108,155,255,.10)' }}>🔄</span>}
                                                                     <button onClick={() => handleDeleteGoal(activeProject.id, phase.id, goal.id)} className="text-hub-faint hover:text-rose-400 shrink-0 opacity-0 group-hover/goal:opacity-100 transition-all">
                                                                         <Icon d={ICONS.close} className="w-3.5 h-3.5" />
                                                                     </button>
