@@ -10,8 +10,8 @@ app.use(express.json());
 // Verbindung zur PostgreSQL-Datenbank (Internes Coolify-Netzwerk benötigt kein SSL)
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_SSL === 'true' 
-    ? { rejectUnauthorized: false } 
+  ssl: process.env.DATABASE_SSL === 'true'
+    ? { rejectUnauthorized: false }
     : false
 });
 
@@ -88,25 +88,45 @@ app.get('/', (req, res) => {
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Mission Control Hub</title>
-    
+
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Mission Control">
-    
+
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23111827' stroke='%233b82f6' stroke-width='4'/%3E%3Ctext y='68' x='20' font-size='55'%3E🛰️%3C/text%3E%3C/svg%3E">
     <link class="ios-icon" rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%23111827' stroke='%233b82f6' stroke-width='4'/%3E%3Ctext y='68' x='20' font-size='55'%3E🛰️%3C/text%3E%3C/svg%3E">
-    
-    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Mission%20Control%20Hub%22%2C%22short_name%22%3A%22Mission%20Control%22%2C%22start_url%22%3A%22%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23090d16%22%2C%22theme_color%22%3A%22%23090d16%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org/2000%2Fsvg' viewBox%3D'0 0 100 100'%253E%253Crect width%3D'100' height%3D'100' rx%3D'24' fill%3D'%2523111827' stroke%3D'%25233b82f6' stroke-width%3D'4'%252F%253E%253Ctext y%3D'68' x%3D'20' font-size%3D'55'%253E🛰️%253C%2Ftext%3E%253C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+
+    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Mission%20Control%20Hub%22%2C%22short_name%22%3A%22Mission%20Control%22%2C%22start_url%22%3A%22%2F%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23070b14%22%2C%22theme_color%22%3A%22%23070b14%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg xmlns%3D'http%3A%2F%2Fwww.w3.org/2000%2Fsvg' viewBox%3D'0 0 100 100'%253E%253Crect width%3D'100' height%3D'100' rx%3D'24' fill%3D'%2523111827' stroke%3D'%25233b82f6' stroke-width%3D'4'%252F%253E%253Ctext y%3D'68' x%3D'20' font-size%3D'55'%253E🛰️%253C%2Ftext%3E%253C%2Fsvg%3E%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                        mono2: ['JetBrains Mono', 'monospace']
+                    },
                     colors: {
-                        hub: { dark: '#090d16', card: '#111827', border: '#1f2937', accent: '#3b82f6' }
+                        hub: {
+                            void: '#05080f',
+                            base: '#0a0f1c',
+                            card: '#111a2e',
+                            raised: '#16213b',
+                            line: '#22304f',
+                            hair: '#19233c',
+                            accent: '#6c9bff',
+                            text: '#e8edfb',
+                            muted: '#8b97b6',
+                            faint: '#5c6788'
+                        }
                     }
                 }
             }
@@ -116,37 +136,144 @@ app.get('/', (req, res) => {
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #090d16; }
-        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 4px; }
-        .drag-zone-active { border-color: #3b82f6 !important; background-color: rgba(59, 130, 246, 0.05); }
+        :root{
+            --void:#05080f; --base:#0a0f1c; --card:#111a2e; --raised:#16213b;
+            --line:#22304f; --hair:#19233c; --accent:#6c9bff; --accent2:#22d3ee;
+            --text:#e8edfb; --muted:#8b97b6; --faint:#5c6788;
+        }
+        *{ -webkit-tap-highlight-color: transparent; }
+        html{ scroll-behavior:smooth; }
+        body{
+            font-family:'Inter', system-ui, sans-serif;
+            background:var(--base);
+            color:var(--text);
+            background-image:
+                radial-gradient(1100px 560px at 12% -12%, rgba(108,155,255,.12), transparent 60%),
+                radial-gradient(900px 520px at 112% 4%, rgba(34,211,238,.08), transparent 55%);
+            background-attachment:fixed;
+        }
+        .font-display{ font-family:'Space Grotesk', sans-serif; }
+        .font-mono2{ font-family:'JetBrains Mono', monospace; }
+
+        /* Sparse starfield + faint orbit ring */
+        .sky{
+            position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+        }
+        .sky::before{
+            content:""; position:absolute; inset:-20%;
+            background-image:
+                radial-gradient(1.4px 1.4px at 18% 22%, rgba(255,255,255,.55), transparent),
+                radial-gradient(1px 1px at 64% 38%, rgba(255,255,255,.40), transparent),
+                radial-gradient(1.2px 1.2px at 42% 72%, rgba(180,205,255,.45), transparent),
+                radial-gradient(1px 1px at 82% 64%, rgba(255,255,255,.35), transparent),
+                radial-gradient(1px 1px at 30% 52%, rgba(255,255,255,.30), transparent),
+                radial-gradient(1.3px 1.3px at 88% 16%, rgba(255,255,255,.45), transparent),
+                radial-gradient(1px 1px at 8% 80%, rgba(255,255,255,.30), transparent);
+            animation: drift 80s linear infinite;
+        }
+        .sky::after{
+            content:""; position:absolute; top:-30vmax; right:-30vmax;
+            width:70vmax; height:70vmax; border-radius:50%;
+            border:1px solid rgba(108,155,255,.06);
+            box-shadow:0 0 0 30vmax rgba(108,155,255,.012) inset;
+        }
+        @keyframes drift{ from{ transform:translateY(0) } to{ transform:translateY(-40px) } }
+
+        .glass{
+            background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+            border:1px solid var(--line);
+            -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+        }
+
+        /* Custom goal checkbox */
+        .chk{
+            -webkit-appearance:none; appearance:none;
+            width:20px; height:20px; flex:0 0 auto; cursor:pointer;
+            border:1.5px solid var(--line); background:rgba(255,255,255,.02);
+            border-radius:6px; position:relative; transition:all .18s ease;
+        }
+        .chk.cont{ border-radius:999px; }
+        .chk:hover{ border-color:var(--accent); }
+        .chk:checked{ background:var(--accent); border-color:var(--accent); }
+        .chk:checked::after{
+            content:""; position:absolute; left:6px; top:2.5px;
+            width:5px; height:9px; border:solid #05080f;
+            border-width:0 2px 2px 0; transform:rotate(45deg);
+        }
+        .chk:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+        /* Inputs reset to feel native to the theme */
+        .field{
+            background:rgba(255,255,255,.02); border:1px solid var(--line);
+            border-radius:12px; color:var(--text); transition:border-color .18s, box-shadow .18s;
+        }
+        .field:focus{ outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(108,155,255,.14); }
+        .ghost-input{ background:transparent; border:none; outline:none; color:inherit; }
+        .ghost-input::placeholder{ color:var(--faint); }
+
+        ::-webkit-scrollbar{ width:7px; height:7px; }
+        ::-webkit-scrollbar-track{ background:transparent; }
+        ::-webkit-scrollbar-thumb{ background:var(--line); border-radius:8px; }
+        ::-webkit-scrollbar-thumb:hover{ background:#2c3d63; }
+
+        .drag-zone-active{ background:rgba(108,155,255,.05) !important; box-shadow: inset 0 0 0 1.5px rgba(108,155,255,.45); border-radius:16px; }
+
+        @keyframes pop{ from{ opacity:0; transform:translateY(8px) scale(.985) } to{ opacity:1; transform:translateY(0) scale(1) } }
+        @keyframes sheet{ from{ opacity:0; transform:translateY(24px) } to{ opacity:1; transform:translateY(0) } }
+        @keyframes fade{ from{ opacity:0 } to{ opacity:1 } }
+        .anim-pop{ animation:pop .35s cubic-bezier(.2,.7,.2,1) both; }
+        .anim-fade{ animation:fade .3s ease both; }
+        .anim-sheet{ animation:sheet .3s cubic-bezier(.2,.7,.2,1) both; }
+
+        @media (prefers-reduced-motion: reduce){
+            *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+        }
     </style>
 </head>
-<body class="bg-hub-dark text-slate-100 min-h-screen font-sans antialiased">
-    <div id="root"></div>
+<body class="min-h-screen antialiased">
+    <div class="sky"></div>
+    <div id="root" class="relative z-10"></div>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+        // Pro-Projekt Farbidentität (Hex + RGB-Triplet für weiche Flächen/Glows)
         const COLOR_THEMES = {
-            blue: { border: 'border-blue-500/30', text: 'text-blue-400', bg: 'bg-blue-500/10', solid: 'bg-blue-500', fill: 'from-blue-600/20 to-transparent' },
-            purple: { border: 'border-purple-500/30', text: 'text-purple-400', bg: 'bg-purple-500/10', solid: 'bg-purple-500', fill: 'from-purple-600/20 to-transparent' },
-            emerald: { border: 'border-emerald-500/30', text: 'text-emerald-400', bg: 'bg-emerald-500/10', solid: 'bg-emerald-500', fill: 'from-emerald-600/20 to-transparent' },
-            rose: { border: 'border-rose-500/30', text: 'text-rose-400', bg: 'bg-rose-500/10', solid: 'bg-rose-500', fill: 'from-rose-600/20 to-transparent' },
-            amber: { border: 'border-amber-500/30', text: 'text-amber-400', bg: 'bg-amber-500/10', solid: 'bg-amber-500', fill: 'from-amber-600/20 to-transparent' },
-            cyan: { border: 'border-cyan-500/30', text: 'text-cyan-400', bg: 'bg-cyan-500/10', solid: 'bg-cyan-500', fill: 'from-cyan-600/20 to-transparent' }
+            blue:    { hex:'#6c9bff', rgb:'108,155,255', name:'Blau' },
+            purple:  { hex:'#a78bfa', rgb:'167,139,250', name:'Violett' },
+            emerald: { hex:'#34d399', rgb:'52,211,153',  name:'Smaragd' },
+            rose:    { hex:'#fb7185', rgb:'251,113,133',  name:'Rosé' },
+            amber:   { hex:'#fbbf24', rgb:'251,191,36',   name:'Bernstein' },
+            cyan:    { hex:'#22d3ee', rgb:'34,211,238',   name:'Cyan' }
+        };
+        const themeOf = (c) => COLOR_THEMES[c] || COLOR_THEMES.blue;
+
+        // Kleine Icons (inline SVG) für ein konsistentes Strichbild
+        const Icon = ({ d, className }) => (
+            <svg className={className || 'w-4 h-4'} fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                {Array.isArray(d) ? d.map((p, i) => <path key={i} d={p} />) : <path d={d} />}
+            </svg>
+        );
+        const ICONS = {
+            plus: 'M12 5v14M5 12h14',
+            trash: ['M4 7h16', 'M10 11v6M14 11v6', 'M6 7l1 13a2 2 0 002 2h6a2 2 0 002-2l1-13', 'M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2'],
+            back: 'M15 18l-6-6 6-6',
+            close: 'M6 6l12 12M18 6L6 18',
+            export: ['M12 3v12', 'M8 7l4-4 4 4', 'M5 15v4a2 2 0 002 2h10a2 2 0 002-2v-4'],
+            import: ['M12 15V3', 'M8 11l4 4 4-4', 'M5 15v4a2 2 0 002 2h10a2 2 0 002-2v-4']
         };
 
         function App() {
             const [projects, setProjects] = useState([]);
             const [activeProjectId, setActiveProjectId] = useState(null);
             const [toast, setToast] = useState({ show: false, message: '' });
-            
+            const [loading, setLoading] = useState(true);
+
             const [isNewProjectModalOpen, setIsNewProjectModalOpen] = useState(false);
             const [isNewPhaseModalOpen, setIsNewPhaseModalOpen] = useState(false);
             const [isImportModalOpen, setIsImportModalOpen] = useState(false);
             const [insertIndex, setInsertIndex] = useState(null);
-            
+
             const [newProjName, setNewProjName] = useState('');
             const [newProjDesc, setNewProjDesc] = useState('');
             const [newProjColor, setNewProjColor] = useState('blue');
@@ -159,8 +286,8 @@ app.get('/', (req, res) => {
             useEffect(() => {
                 fetch('/api/projects')
                     .then(res => res.json())
-                    .then(data => setProjects(data))
-                    .catch(err => console.error(err));
+                    .then(data => { setProjects(data); setLoading(false); })
+                    .catch(err => { console.error(err); setLoading(false); });
             }, []);
 
             const saveProjectToDb = (updatedProj) => {
@@ -169,7 +296,7 @@ app.get('/', (req, res) => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(updatedProj)
                 })
-                .then(() => showNotification("Cloud synchronisiert!"))
+                .then(() => showNotification("Cloud synchronisiert"))
                 .catch(err => console.error(err));
             };
 
@@ -194,6 +321,7 @@ app.get('/', (req, res) => {
                 setIsNewProjectModalOpen(false);
                 setNewProjName('');
                 setNewProjDesc('');
+                setNewProjColor('blue');
                 saveProjectToDb(newProject);
             };
 
@@ -202,7 +330,7 @@ app.get('/', (req, res) => {
                 if (confirm("Projekt wirklich aus der Datenbank löschen?")) {
                     setProjects(projects.filter(p => p.id !== projId));
                     fetch('/api/projects/' + projId, { method: 'DELETE' })
-                        .then(() => showNotification("Projekt gelöscht."))
+                        .then(() => showNotification("Projekt gelöscht"))
                         .catch(err => console.error(err));
                 }
             };
@@ -210,10 +338,10 @@ app.get('/', (req, res) => {
             const handleCreatePhaseSubmit = (e) => {
                 e.preventDefault();
                 if (!newPhaseTitle.trim() || !activeProjectId) return;
-                
+
                 let targetProj = null;
                 const newPhaseObj = { id: 'phase-' + Date.now(), title: newPhaseTitle.trim(), goals: [] };
-                
+
                 const updated = projects.map(proj => {
                     if (proj.id === activeProjectId) {
                         let updatedPhases = [...proj.phases];
@@ -394,7 +522,6 @@ app.get('/', (req, res) => {
             // --- IMPORT & EXPORT OPERATIVE LOGIK ---
             const handleExportJson = () => {
                 if (!activeProject) return;
-                // Extrahiere nur die relevanten Inhalts-Daten fuer den KI-Austausch
                 const exportData = {
                     name: activeProject.name,
                     description: activeProject.description,
@@ -408,11 +535,11 @@ app.get('/', (req, res) => {
                         }))
                     }))
                 };
-                
+
                 const jsonString = JSON.stringify(exportData, null, 2);
                 navigator.clipboard.writeText(jsonString)
-                    .then(() => showNotification("JSON in Zwischenablage kopiert!"))
-                    .catch(() => showNotification("Kopieren fehlgeschlagen."));
+                    .then(() => showNotification("JSON in Zwischenablage kopiert"))
+                    .catch(() => showNotification("Kopieren fehlgeschlagen"));
             };
 
             const handleImportJsonSubmit = (e) => {
@@ -425,7 +552,6 @@ app.get('/', (req, res) => {
                         throw new Error("Ungueltiges Format: 'phases' Array fehlt.");
                     }
 
-                    // Rekonstruiere die Datenstruktur mit eindeutigen IDs fuer das UI
                     const formattedPhases = parsed.phases.map((p, pIdx) => ({
                         id: 'phase-' + (Date.now() + pIdx),
                         title: p.title || 'Unbenannter Abschnitt',
@@ -456,7 +582,7 @@ app.get('/', (req, res) => {
                     setIsImportModalOpen(false);
                     setImportJsonText('');
                     if (targetProj) saveProjectToDb(targetProj);
-                    showNotification("Plan erfolgreich importiert!");
+                    showNotification("Plan erfolgreich importiert");
                 } catch (err) {
                     alert("Fehler beim Parsen der JSON-Daten: " + err.message);
                 }
@@ -465,243 +591,360 @@ app.get('/', (req, res) => {
             const activeProject = projects.find(p => p.id === activeProjectId);
 
             return (
-                <div class="flex flex-col min-h-screen">
-                    <header class="border-b border-slate-800 bg-hub-card/60 backdrop-blur-md sticky top-0 z-40 px-4 py-4 sm:px-6">
-                        <div class="max-w-5xl mx-auto flex justify-between items-center">
-                            <div class="flex items-center gap-3 cursor-pointer group" onClick={() => setActiveProjectId(null)}>
-                                <div class="w-9 h-9 rounded-xl bg-blue-950/50 border border-blue-500/30 flex items-center justify-center text-lg shadow-lg shadow-blue-500/10 transition-all group-hover:border-blue-400">
+                <div className="flex flex-col min-h-screen">
+                    {/* ---------- HEADER ---------- */}
+                    <header className="glass sticky top-0 z-40 px-4 sm:px-6" style={{ paddingTop: 'max(0.85rem, env(safe-area-inset-top))', paddingBottom: '0.85rem' }}>
+                        <div className="max-w-5xl mx-auto flex justify-between items-center gap-3">
+                            <div className="flex items-center gap-3 cursor-pointer group min-w-0" onClick={() => setActiveProjectId(null)}>
+                                <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg shrink-0 transition-all group-hover:scale-105"
+                                     style={{ background:'radial-gradient(120% 120% at 30% 20%, rgba(108,155,255,.22), rgba(34,211,238,.06))', border:'1px solid rgba(108,155,255,.30)', boxShadow:'0 8px 24px -10px rgba(108,155,255,.5)' }}>
                                     🛰️
                                 </div>
-                                <div>
-                                    <h1 class="text-lg font-bold tracking-tight group-hover:text-blue-400 transition-colors">Mission Control</h1>
-                                    <p class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">PostgreSQL Cloud Sync</p>
+                                <div className="min-w-0">
+                                    <h1 className="font-display text-lg font-bold tracking-tight leading-none group-hover:text-hub-accent transition-colors truncate">Mission Control</h1>
+                                    <p className="font-mono2 text-[10px] text-hub-faint uppercase tracking-[0.2em] mt-1">PostgreSQL · Live Sync</p>
                                 </div>
                             </div>
                             {activeProjectId === null && (
-                                <button onClick={() => setIsNewProjectModalOpen(true)} class="bg-blue-600 hover:bg-blue-500 text-white text-xs px-3.5 py-2 rounded-lg font-semibold flex items-center gap-1.5 shadow-lg shadow-blue-500/10 transition-all">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                                    <span>Neues Projekt</span>
+                                <button onClick={() => setIsNewProjectModalOpen(true)}
+                                    className="shrink-0 text-white text-xs sm:text-sm px-3.5 sm:px-4 py-2.5 rounded-xl font-semibold flex items-center gap-1.5 transition-all active:scale-95 hover:brightness-110"
+                                    style={{ background:'linear-gradient(180deg, #6c9bff, #4f7cf0)', boxShadow:'0 10px 24px -10px rgba(108,155,255,.7)' }}>
+                                    <Icon d={ICONS.plus} className="w-4 h-4" />
+                                    <span className="hidden sm:inline">Neues Projekt</span>
+                                    <span className="sm:hidden">Projekt</span>
                                 </button>
                             )}
                         </div>
                     </header>
 
-                    <main class="flex-1 max-w-5xl w-full mx-auto px-4 py-8">
+                    <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-7 sm:py-10" style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}>
                         {activeProjectId === null ? (
-                            <div class="space-y-8">
-                                <div class="bg-gradient-to-r from-slate-900 via-hub-card to-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
-                                    <div class="absolute -right-16 -bottom-16 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
-                                    <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white relative z-10">Zentrales Kontrollzentrum</h2>
-                                    <p class="text-sm text-slate-400 max-w-xl relative z-10 font-normal">Deine Zeitachsen werden live in PostgreSQL gesichert und geräteübergreifend synchronisiert.</p>
-                                </div>
+                            /* ============ DASHBOARD ============ */
+                            <div className="space-y-8 anim-fade">
+                                <section className="relative overflow-hidden rounded-3xl p-6 sm:p-9 glass">
+                                    <div className="absolute -right-20 -top-24 w-72 h-72 rounded-full blur-3xl" style={{ background:'rgba(108,155,255,.16)' }}></div>
+                                    <div className="absolute -left-16 -bottom-24 w-64 h-64 rounded-full blur-3xl" style={{ background:'rgba(34,211,238,.10)' }}></div>
+                                    <p className="font-mono2 text-[11px] uppercase tracking-[0.28em] text-hub-accent relative z-10">Kontrollzentrum</p>
+                                    <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-white mt-2 relative z-10 leading-[1.1]">Alle Vorhaben.<br className="hidden sm:block"/> Eine Flugbahn.</h2>
+                                    <p className="text-sm text-hub-muted max-w-md mt-3 relative z-10 leading-relaxed">Zeitachsen, Phasen und Ziele — live in PostgreSQL gesichert und auf jedem Gerät synchron.</p>
+                                </section>
 
-                                <div class="space-y-4">
-                                    <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">Projekte in der Cloud</h3>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {projects.map(proj => {
-                                            const theme = COLOR_THEMES[proj.color] || COLOR_THEMES.blue;
-                                            let totalGoals = 0, completedGoals = 0;
-                                            proj.phases.forEach(p => p.goals.forEach(g => { totalGoals++; if (g.completed) completedGoals++; }));
-                                            const progressPercent = totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
-
-                                            return (
-                                                <div key={proj.id} onClick={() => setActiveProjectId(proj.id)} class="bg-hub-card border border-slate-800/80 hover:border-slate-700 rounded-2xl p-5 cursor-pointer transition-all hover:scale-[1.01] relative flex flex-col justify-between group overflow-hidden shadow-xl">
-                                                    <div class="space-y-2">
-                                                        <div class="flex justify-between items-start">
-                                                            <h4 class="text-lg font-bold text-slate-100 group-hover:text-blue-400 transition-colors">{proj.name}</h4>
-                                                            <button onClick={(e) => handleDeleteProject(proj.id, e)} class="text-slate-500 hover:text-rose-500 p-1 rounded opacity-0 group-hover:opacity-100 transition-all">
-                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                            </button>
-                                                        </div>
-                                                        <p class="text-xs text-slate-400 line-clamp-2">{proj.description}</p>
-                                                    </div>
-                                                    <div class="mt-6 space-y-1.5">
-                                                        <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
-                                                            <div class={'h-full ' + theme.solid + ' transition-all duration-500'} style={{ width: progressPercent + '%' }}></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
+                                <section className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="font-mono2 text-[11px] font-medium uppercase tracking-[0.2em] text-hub-faint">Projekte · {projects.length}</h3>
                                     </div>
-                                </div>
+
+                                    {loading ? (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {[0,1].map(i => (
+                                                <div key={i} className="glass rounded-2xl p-5 h-36 animate-pulse" style={{ opacity:.5 }}></div>
+                                            ))}
+                                        </div>
+                                    ) : projects.length === 0 ? (
+                                        <div className="glass rounded-3xl px-6 py-14 text-center flex flex-col items-center">
+                                            <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4" style={{ background:'rgba(108,155,255,.10)', border:'1px solid rgba(108,155,255,.25)' }}>🛰️</div>
+                                            <h4 className="font-display text-lg font-bold text-white">Noch keine Mission gestartet</h4>
+                                            <p className="text-sm text-hub-muted mt-1 max-w-xs">Lege dein erstes Projekt an und baue eine Zeitachse aus Phasen und Zielen.</p>
+                                            <button onClick={() => setIsNewProjectModalOpen(true)} className="mt-5 text-white text-sm px-4 py-2.5 rounded-xl font-semibold flex items-center gap-1.5 active:scale-95 transition-all" style={{ background:'linear-gradient(180deg, #6c9bff, #4f7cf0)', boxShadow:'0 10px 24px -10px rgba(108,155,255,.7)' }}>
+                                                <Icon d={ICONS.plus} className="w-4 h-4" /> Erstes Projekt anlegen
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {projects.map(proj => {
+                                                const t = themeOf(proj.color);
+                                                let totalGoals = 0, completedGoals = 0;
+                                                proj.phases.forEach(p => p.goals.forEach(g => { totalGoals++; if (g.completed) completedGoals++; }));
+                                                const progressPercent = totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
+
+                                                return (
+                                                    <div key={proj.id} onClick={() => setActiveProjectId(proj.id)}
+                                                        className="group glass rounded-2xl p-5 cursor-pointer transition-all hover:-translate-y-0.5 relative overflow-hidden"
+                                                        style={{ borderColor:'var(--line)' }}>
+                                                        <div className="absolute left-0 top-0 h-full w-1" style={{ background:'linear-gradient(180deg, ' + t.hex + ', transparent)' }}></div>
+                                                        <div className="absolute -right-10 -top-10 w-32 h-32 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" style={{ background:'rgba(' + t.rgb + ',.16)' }}></div>
+
+                                                        <div className="relative">
+                                                            <div className="flex justify-between items-start gap-3">
+                                                                <div className="flex items-center gap-2.5 min-w-0">
+                                                                    <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background:t.hex, boxShadow:'0 0 10px ' + t.hex }}></span>
+                                                                    <h4 className="font-display text-lg font-bold text-slate-100 truncate group-hover:text-white transition-colors">{proj.name}</h4>
+                                                                </div>
+                                                                <button onClick={(e) => handleDeleteProject(proj.id, e)} className="text-hub-faint hover:text-rose-400 p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-all -mr-1 -mt-1">
+                                                                    <Icon d={ICONS.trash} className="w-4 h-4" />
+                                                                </button>
+                                                            </div>
+                                                            <p className="text-xs text-hub-muted mt-1.5 line-clamp-2 leading-relaxed pr-2">{proj.description}</p>
+
+                                                            <div className="mt-5 flex items-center justify-between gap-3">
+                                                                <div className="font-mono2 text-[10px] text-hub-faint uppercase tracking-wider">
+                                                                    {proj.phases.length} Phasen · {completedGoals}/{totalGoals} Ziele
+                                                                </div>
+                                                                <div className="font-mono2 text-xs font-medium tabular-nums" style={{ color:t.hex }}>{progressPercent}%</div>
+                                                            </div>
+                                                            <div className="mt-2 w-full rounded-full h-1.5 overflow-hidden" style={{ background:'rgba(255,255,255,.05)' }}>
+                                                                <div className="h-full rounded-full transition-all duration-700" style={{ width: progressPercent + '%', background:'linear-gradient(90deg, ' + t.hex + ', rgba(' + t.rgb + ',.55))' }}></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </section>
                             </div>
                         ) : (
-                            <div class="space-y-6">
-                                <div class="flex justify-between items-center">
-                                    <button onClick={() => setActiveProjectId(null)} class="text-slate-400 hover:text-slate-200 text-xs font-semibold flex items-center gap-1.5 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg transition-all">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                                        Zurück
+                            /* ============ PROJEKT-DETAIL ============ */
+                            <div className="space-y-6 anim-fade">
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                    <button onClick={() => setActiveProjectId(null)} className="self-start glass text-hub-muted hover:text-white text-xs font-semibold flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all active:scale-95">
+                                        <Icon d={ICONS.back} className="w-4 h-4" /> Übersicht
                                     </button>
-                                    
-                                    {/* INTERACTION HUB FÜR INTELLIGENTEN IMPORT/EXPORT */}
-                                    <div class="flex gap-2">
-                                        <button onClick={handleExportJson} class="text-slate-300 hover:text-white text-xs font-medium bg-slate-900 border border-slate-800 hover:border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all">
-                                            <span>📤 Plan exportieren</span>
+
+                                    <div className="flex gap-2">
+                                        <button onClick={handleExportJson} className="flex-1 sm:flex-none glass text-hub-muted hover:text-white text-xs font-medium px-3 py-2 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95">
+                                            <Icon d={ICONS.export} className="w-3.5 h-3.5" /> Exportieren
                                         </button>
-                                        <button onClick={() => setIsImportModalOpen(true)} class="text-blue-400 hover:text-blue-300 text-xs font-medium bg-blue-950/30 border border-blue-900/50 hover:border-blue-800 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all">
-                                            <span>📥 Plan importieren</span>
+                                        <button onClick={() => setIsImportModalOpen(true)} className="flex-1 sm:flex-none text-xs font-medium px-3 py-2 rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95"
+                                            style={{ color:'#a7c1ff', background:'rgba(108,155,255,.10)', border:'1px solid rgba(108,155,255,.28)' }}>
+                                            <Icon d={ICONS.import} className="w-3.5 h-3.5" /> Importieren
                                         </button>
                                     </div>
                                 </div>
 
-                                <div class="bg-gradient-to-r from-hub-card to-slate-950 border border-slate-800 rounded-2xl p-6 shadow-xl relative">
-                                    <div class="flex items-center gap-3">
-                                        <div class={'w-3.5 h-3.5 rounded-full ' + (COLOR_THEMES[activeProject.color]?.solid || 'bg-blue-500')}></div>
+                                {/* Projekt-Kopf */}
+                                <div className="glass rounded-2xl p-5 sm:p-6 relative overflow-hidden">
+                                    <div className="absolute -right-12 -top-12 w-40 h-40 rounded-full blur-3xl" style={{ background:'rgba(' + themeOf(activeProject.color).rgb + ',.14)' }}></div>
+                                    <div className="flex items-center gap-3 relative">
+                                        <span className="w-3.5 h-3.5 rounded-full shrink-0" style={{ background:themeOf(activeProject.color).hex, boxShadow:'0 0 12px ' + themeOf(activeProject.color).hex }}></span>
                                         <input type="text" value={activeProject.name} onChange={(e) => {
                                             const updated = projects.map(p => p.id === activeProject.id ? { ...p, name: e.target.value } : p);
                                             setProjects(updated); saveProjectToDb({ ...activeProject, name: e.target.value });
-                                        }} class="bg-transparent font-extrabold text-2xl text-white border-b border-transparent hover:border-slate-700 focus:border-blue-500 focus:outline-none w-full" />
+                                        }} className="ghost-input font-display font-bold text-2xl sm:text-3xl text-white w-full" />
+                                    </div>
+                                    <p className="text-sm text-hub-muted mt-2 relative leading-relaxed">{activeProject.description}</p>
+                                </div>
+
+                                {/* ---------- ZEITACHSE (Signature) ---------- */}
+                                <div className="relative pl-9 sm:pl-12 mt-8">
+                                    {/* Schiene */}
+                                    <div className="absolute top-0 bottom-0 w-px -translate-x-1/2" style={{ left:'11px', background:'linear-gradient(180deg, rgba(108,155,255,.5), rgba(34,211,238,.18) 40%, var(--line))' }}></div>
+                                    <div className="hidden sm:block absolute top-0 bottom-0 w-px -translate-x-1/2" style={{ left:'15px', background:'linear-gradient(180deg, rgba(108,155,255,.5), rgba(34,211,238,.18) 40%, var(--line))' }}></div>
+
+                                    <div className="space-y-2">
+                                        {activeProject.phases.map((phase, idx) => {
+                                            const t = themeOf(activeProject.color);
+                                            const done = phase.goals.filter(g => g.completed).length;
+                                            const all = phase.goals.length;
+                                            const phaseComplete = all > 0 && done === all;
+                                            return (
+                                                <React.Fragment key={phase.id}>
+                                                    {idx > 0 && (
+                                                        <div className="relative h-6 group/ins">
+                                                            <button
+                                                                onClick={() => { setInsertIndex(idx); setIsNewPhaseModalOpen(true); }}
+                                                                type="button"
+                                                                title="Abschnitt hier einfügen"
+                                                                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold opacity-0 group-hover/ins:opacity-100 focus:opacity-100 transition-all hover:scale-110"
+                                                                style={{ left:'11px', background:'var(--card)', border:'1px solid var(--line)', color:'var(--accent)' }}
+                                                            >+</button>
+                                                            <div className="sm:hidden"></div>
+                                                            <button
+                                                                onClick={() => { setInsertIndex(idx); setIsNewPhaseModalOpen(true); }}
+                                                                type="button"
+                                                                title="Abschnitt hier einfügen"
+                                                                className="hidden sm:flex absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-6 rounded-full items-center justify-center text-sm font-bold opacity-0 group-hover/ins:opacity-100 focus:opacity-100 transition-all hover:scale-110"
+                                                                style={{ left:'15px', background:'var(--card)', border:'1px solid var(--line)', color:'var(--accent)' }}
+                                                            >+</button>
+                                                        </div>
+                                                    )}
+
+                                                    <div
+                                                        className="relative group pb-5 rounded-2xl transition-all"
+                                                        onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('drag-zone-active'); }}
+                                                        onDragLeave={(e) => e.currentTarget.classList.remove('drag-zone-active')}
+                                                        onDrop={(e) => { e.preventDefault(); e.currentTarget.classList.remove('drag-zone-active'); onGoalDropHandler(phase.id); }}
+                                                    >
+                                                        {/* Knoten */}
+                                                        <span className="absolute top-1 -translate-x-1/2 w-[15px] h-[15px] rounded-full flex items-center justify-center" style={{ left:'11px', background:'var(--base)', border:'2px solid ' + t.hex, boxShadow: phaseComplete ? '0 0 12px ' + t.hex : '0 0 0 4px rgba(' + t.rgb + ',.08)' }}>
+                                                            {phaseComplete && <span className="w-1.5 h-1.5 rounded-full" style={{ background:t.hex }}></span>}
+                                                        </span>
+                                                        <span className="hidden sm:flex absolute top-1 -translate-x-1/2 w-[15px] h-[15px] rounded-full items-center justify-center" style={{ left:'15px', background:'var(--base)', border:'2px solid ' + t.hex, boxShadow: phaseComplete ? '0 0 12px ' + t.hex : '0 0 0 4px rgba(' + t.rgb + ',.08)' }}>
+                                                            {phaseComplete && <span className="w-1.5 h-1.5 rounded-full" style={{ background:t.hex }}></span>}
+                                                        </span>
+
+                                                        <div className="flex items-center justify-between gap-2 mb-3">
+                                                            <div className="flex items-center gap-2 min-w-0">
+                                                                <input type="text" value={phase.title} onChange={(e) => handleUpdatePhaseTitle(activeProject.id, phase.id, e.target.value)} className="ghost-input font-display font-semibold text-slate-100 text-base min-w-0" />
+                                                                {all > 0 && (
+                                                                    <span className="font-mono2 text-[10px] px-2 py-0.5 rounded-full shrink-0 tabular-nums" style={{ color:t.hex, background:'rgba(' + t.rgb + ',.10)' }}>{done}/{all}</span>
+                                                                )}
+                                                            </div>
+                                                            <button onClick={() => handleDeletePhase(activeProject.id, phase.id)} className="text-hub-faint hover:text-rose-400 p-1 rounded-lg opacity-0 group-hover:opacity-100 transition-all shrink-0">
+                                                                <Icon d={ICONS.trash} className="w-4 h-4" />
+                                                            </button>
+                                                        </div>
+
+                                                        <ul className="space-y-2 min-h-[8px]">
+                                                            {phase.goals.map((goal) => (
+                                                                <li
+                                                                    key={goal.id}
+                                                                    draggable
+                                                                    onDragStart={() => onGoalDragStart(goal.id, phase.id)}
+                                                                    onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                                                                    onDrop={(e) => { e.preventDefault(); e.stopPropagation(); onGoalDropHandler(phase.id, goal.id); }}
+                                                                    className={'group/goal flex items-center gap-2.5 p-2.5 sm:p-3 rounded-xl border transition-all cursor-grab active:cursor-grabbing ' + (goal.completed ? 'bg-white/[0.015] border-white/[0.04]' : 'glass hover:border-hub-line')}
+                                                                >
+                                                                    <span className="text-hub-faint text-xs tracking-tighter select-none cursor-grab hidden sm:block">⋮⋮</span>
+                                                                    <input type="checkbox" checked={goal.completed} onChange={() => handleToggleGoal(activeProject.id, phase.id, goal.id)} className={'chk ' + (goal.continuous ? 'cont' : '')} />
+                                                                    <input type="text" value={goal.text} onChange={(e) => handleUpdateGoalText(activeProject.id, phase.id, goal.id, e.target.value)} className={'ghost-input text-xs sm:text-sm flex-1 min-w-0 ' + (goal.completed ? 'line-through text-hub-faint' : 'text-slate-200')} />
+                                                                    {goal.continuous && <span className="font-mono2 text-[9px] px-1.5 py-0.5 rounded-full shrink-0 hidden xs:inline" style={{ color:'#a7c1ff', background:'rgba(108,155,255,.10)' }}>🔄</span>}
+                                                                    <button onClick={() => handleDeleteGoal(activeProject.id, phase.id, goal.id)} className="text-hub-faint hover:text-rose-400 shrink-0 opacity-0 group-hover/goal:opacity-100 transition-all">
+                                                                        <Icon d={ICONS.close} className="w-3.5 h-3.5" />
+                                                                    </button>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                        <PhaseGoalForm accent={t.hex} onAddGoal={(text, isContinuous) => handleAddGoal(activeProject.id, phase.id, text, isContinuous)} />
+                                                    </div>
+                                                </React.Fragment>
+                                            );
+                                        })}
+
+                                        {activeProject.phases.length === 0 && (
+                                            <p className="text-sm text-hub-muted py-2">Noch keine Phasen. Füge unten den ersten Abschnitt deiner Zeitachse hinzu.</p>
+                                        )}
                                     </div>
                                 </div>
 
-                                <div class="relative border-l-2 border-slate-800 ml-4 pl-6 sm:pl-8 mt-10 space-y-3">
-                                    {activeProject.phases.map((phase, idx) => (
-                                        <React.Fragment key={phase.id}>
-                                            
-                                            {idx > 0 && (
-                                                <div class="relative -ml-[43px] sm:-ml-[51px] flex items-center justify-center h-4 my-1 group/btn">
-                                                    <div class="absolute w-full h-[1px] bg-slate-800/60 group-hover/btn:bg-blue-500/30 transition-all"></div>
-                                                    <button 
-                                                        onClick={() => { setInsertIndex(idx); setIsNewPhaseModalOpen(true); }}
-                                                        type="button"
-                                                        class="relative z-10 w-5 h-5 rounded-full bg-slate-900 border border-slate-700 hover:border-blue-500 text-slate-400 hover:text-blue-400 text-xs flex items-center justify-center font-bold opacity-10 group-hover/btn:opacity-100 transition-all scale-105 hover:scale-110"
-                                                    >
-                                                        +
-                                                    </button>
-                                                </div>
-                                            )}
-
-                                            <div 
-                                                class="relative group pb-4 transition-all"
-                                                onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('drag-zone-active'); }}
-                                                onDragLeave={(e) => e.currentTarget.classList.remove('drag-zone-active')}
-                                                onDrop={(e) => { e.preventDefault(); e.currentTarget.classList.remove('drag-zone-active'); onGoalDropHandler(phase.id); }}
-                                            >
-                                                <div class="absolute -left-[33px] sm:-left-[41px] top-1.5 w-4 h-4 rounded-full border-2 border-blue-500 bg-hub-dark flex items-center justify-center"><div class="w-1.5 h-1.5 bg-blue-500 rounded-full"></div></div>
-                                                <div class="flex items-center justify-between mb-4">
-                                                    <input type="text" value={phase.title} onChange={(e) => handleUpdatePhaseTitle(activeProject.id, phase.id, e.target.value)} class="bg-transparent font-bold text-slate-200 text-base border-b border-transparent focus:border-blue-500 focus:outline-none" />
-                                                    <button onClick={() => handleDeletePhase(activeProject.id, phase.id)} class="text-slate-500 hover:text-rose-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-                                                </div>
-
-                                                <ul class="space-y-2 min-h-[20px]">
-                                                    {phase.goals.map((goal) => (
-                                                        <li 
-                                                            key={goal.id}
-                                                            draggable
-                                                            onDragStart={() => onGoalDragStart(goal.id, phase.id)}
-                                                            onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                                                            onDrop={(e) => { e.preventDefault(); e.stopPropagation(); onGoalDropHandler(phase.id, goal.id); }}
-                                                            class={'flex items-center justify-between p-3 rounded-xl border cursor-grab active:cursor-grabbing transition-all ' + (goal.completed ? 'bg-slate-950/40 border-slate-950/60 text-slate-500' : 'bg-hub-card border-slate-800/80 text-slate-200 hover:border-slate-700')}
-                                                        >
-                                                            <div class="flex items-center gap-3 flex-1">
-                                                                <div class="text-slate-600 text-[10px] tracking-widest select-none hidden sm:block">☰</div>
-                                                                <input type="checkbox" checked={goal.completed} onChange={() => handleToggleGoal(activeProject.id, phase.id, goal.id)} class={'w-4.5 h-4.5 text-blue-600 bg-slate-950 focus:ring-0 cursor-pointer ' + (goal.continuous ? 'rounded-full border-2 border-blue-500' : 'rounded')} />
-                                                                <input type="text" value={goal.text} onChange={(e) => handleUpdateGoalText(activeProject.id, phase.id, goal.id, e.target.value)} class={'bg-transparent focus:outline-none text-xs sm:text-sm flex-1 ' + (goal.completed ? 'line-through' : '')} />
-                                                                {goal.continuous && <span class="text-[10px] bg-blue-500/10 text-blue-400 px-1.5 py-0.5 rounded-full shrink-0">🔄 Fortlaufend</span>}
-                                                            </div>
-                                                            <button onClick={() => handleDeleteGoal(activeProject.id, phase.id, goal.id)} class="text-slate-600 hover:text-rose-500"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                                <PhaseGoalForm onAddGoal={(text, isContinuous) => handleAddGoal(activeProject.id, phase.id, text, isContinuous)} />
-                                            </div>
-                                        </React.Fragment>
-                                    ))}
-                                </div>
-
-                                <button onClick={() => { setInsertIndex(null); setIsNewPhaseModalOpen(true); }} class="w-full py-3.5 border-2 border-dashed border-slate-800 bg-hub-card/20 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 flex items-center justify-center gap-2 transition-all mt-4">
-                                    <span>Abschnitt ganz am Ende hinzufügen</span>
+                                <button onClick={() => { setInsertIndex(null); setIsNewPhaseModalOpen(true); }} className="w-full py-3.5 rounded-2xl text-xs font-semibold text-hub-muted hover:text-white flex items-center justify-center gap-2 transition-all" style={{ border:'1.5px dashed var(--line)' }}>
+                                    <Icon d={ICONS.plus} className="w-4 h-4" /> Abschnitt am Ende hinzufügen
                                 </button>
                             </div>
                         )}
                     </main>
 
+                    {/* ---------- MODALS ---------- */}
                     {isNewProjectModalOpen && (
-                        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                            <form onSubmit={handleCreateProject} class="bg-hub-card border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4">
-                                <h3 class="text-lg font-bold">Neues Projekt anlegen</h3>
-                                <input type="text" placeholder="z.B. 🧬 Bioengineering" value={newProjName} onChange={(e) => setNewProjName(e.target.value)} class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-slate-100" required />
-                                <textarea placeholder="Beschreibung..." value={newProjDesc} onChange={(e) => setNewProjDesc(e.target.value)} class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-slate-100 resize-none" />
-                                <div class="flex gap-2">
-                                    <button type="button" onClick={() => setIsNewProjectModalOpen(false)} class="flex-1 py-2 bg-slate-800 rounded-xl text-sm">Abbrechen</button>
-                                    <button type="submit" class="flex-1 py-2 bg-blue-600 rounded-xl text-sm font-semibold">Erstellen</button>
+                        <ModalShell onClose={() => setIsNewProjectModalOpen(false)}>
+                            <form onSubmit={handleCreateProject} className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="font-display text-lg font-bold text-white">Neues Projekt</h3>
+                                    <CloseBtn onClick={() => setIsNewProjectModalOpen(false)} />
+                                </div>
+                                <input type="text" placeholder="z. B. 🧬 Bioengineering" value={newProjName} onChange={(e) => setNewProjName(e.target.value)} className="field w-full p-3 text-slate-100 text-sm" required autoFocus />
+                                <textarea placeholder="Kurze Beschreibung (optional)" value={newProjDesc} onChange={(e) => setNewProjDesc(e.target.value)} className="field w-full p-3 text-slate-100 text-sm resize-none h-20" />
+                                <div>
+                                    <p className="font-mono2 text-[10px] uppercase tracking-[0.18em] text-hub-faint mb-2.5">Farbe</p>
+                                    <div className="flex gap-2.5 flex-wrap">
+                                        {Object.keys(COLOR_THEMES).map(key => (
+                                            <button type="button" key={key} onClick={() => setNewProjColor(key)} title={COLOR_THEMES[key].name}
+                                                className={'w-8 h-8 rounded-full transition-all ' + (newProjColor === key ? 'scale-110' : 'opacity-60 hover:opacity-100')}
+                                                style={{ background: COLOR_THEMES[key].hex, boxShadow: newProjColor === key ? '0 0 0 2px var(--card), 0 0 0 4px ' + COLOR_THEMES[key].hex : 'none' }} />
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="flex gap-2 pt-1">
+                                    <button type="button" onClick={() => setIsNewProjectModalOpen(false)} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-hub-muted hover:text-white transition-all" style={{ background:'rgba(255,255,255,.04)' }}>Abbrechen</button>
+                                    <button type="submit" className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-95" style={{ background:'linear-gradient(180deg, #6c9bff, #4f7cf0)' }}>Erstellen</button>
                                 </div>
                             </form>
-                        </div>
+                        </ModalShell>
                     )}
 
                     {isNewPhaseModalOpen && (
-                        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                            <form onSubmit={handleCreatePhaseSubmit} class="bg-hub-card border border-slate-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-                                <h3 class="text-lg font-bold text-slate-100">
-                                    {insertIndex !== null ? 'Abschnitt dazwischenschieben' : 'Neuen Zeitabschnitt anlegen'}
-                                </h3>
-                                <p class="text-xs text-slate-400">Verwende beliebige Abschnitte (z.B. Semester 3, Woche 12, 10:00 Uhr, Montag).</p>
-                                <input 
-                                    type="text" 
-                                    placeholder="Name des Abschnitts eingeben..." 
-                                    value={newPhaseTitle} 
-                                    onChange={(e) => setNewPhaseTitle(e.target.value)} 
-                                    class="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-slate-100 text-sm focus:outline-none focus:border-blue-500" 
-                                    required 
-                                    autoFocus
-                                />
-                                <div class="flex gap-2 pt-2">
-                                    <button type="button" onClick={() => { setIsNewPhaseModalOpen(false); setNewPhaseTitle(''); setInsertIndex(null); }} class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-sm transition-all">Abbrechen</button>
-                                    <button type="submit" class="flex-1 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-sm font-semibold transition-all">Hinzufügen</button>
+                        <ModalShell onClose={() => { setIsNewPhaseModalOpen(false); setNewPhaseTitle(''); setInsertIndex(null); }}>
+                            <form onSubmit={handleCreatePhaseSubmit} className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="font-display text-lg font-bold text-white">
+                                        {insertIndex !== null ? 'Abschnitt einschieben' : 'Neuer Zeitabschnitt'}
+                                    </h3>
+                                    <CloseBtn onClick={() => { setIsNewPhaseModalOpen(false); setNewPhaseTitle(''); setInsertIndex(null); }} />
+                                </div>
+                                <p className="text-xs text-hub-muted -mt-1">Benenne den Abschnitt frei — etwa „Semester 3", „Woche 12" oder „Montag".</p>
+                                <input type="text" placeholder="Name des Abschnitts" value={newPhaseTitle} onChange={(e) => setNewPhaseTitle(e.target.value)} className="field w-full p-3 text-slate-100 text-sm" required autoFocus />
+                                <div className="flex gap-2 pt-1">
+                                    <button type="button" onClick={() => { setIsNewPhaseModalOpen(false); setNewPhaseTitle(''); setInsertIndex(null); }} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-hub-muted hover:text-white transition-all" style={{ background:'rgba(255,255,255,.04)' }}>Abbrechen</button>
+                                    <button type="submit" className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-95" style={{ background:'linear-gradient(180deg, #6c9bff, #4f7cf0)' }}>Hinzufügen</button>
                                 </div>
                             </form>
-                        </div>
+                        </ModalShell>
                     )}
 
-                    {/* MODAL: INTELLIGENTER PLAN-IMPORT */}
                     {isImportModalOpen && (
-                        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                            <form onSubmit={handleImportJsonSubmit} class="bg-hub-card border border-slate-800 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
-                                <div class="flex justify-between items-start">
+                        <ModalShell wide onClose={() => { setIsImportModalOpen(false); setImportJsonText(''); }}>
+                            <form onSubmit={handleImportJsonSubmit} className="space-y-4">
+                                <div className="flex items-start justify-between gap-3">
                                     <div>
-                                        <h3 class="text-lg font-bold text-slate-100">Fahrplan importieren</h3>
-                                        <p class="text-xs text-slate-400 mt-0.5">Füge hier den JSON-Code ein, den ich dir generiert habe. Der aktuelle Plan wird dadurch überschrieben.</p>
+                                        <h3 className="font-display text-lg font-bold text-white">Fahrplan importieren</h3>
+                                        <p className="text-xs text-hub-muted mt-0.5">Füge generierten JSON-Code ein. Der aktuelle Plan wird überschrieben.</p>
                                     </div>
+                                    <CloseBtn onClick={() => { setIsImportModalOpen(false); setImportJsonText(''); }} />
                                 </div>
-                                <textarea 
-                                    placeholder='{\n  "name": "🧬 Oxford Track",\n  "phases": [\n    {\n      "title": "Semester 3",\n      "goals": [{ "text": "Notenschnitt <= 1.5", "completed": false, "continuous": true }]\n    }\n  ]\n}'
-                                    value={importJsonText} 
-                                    onChange={(e) => setImportJsonText(e.target.value)} 
-                                    class="w-full bg-slate-900 border border-slate-800 rounded-lg p-3 text-slate-200 text-xs font-mono h-64 focus:outline-none focus:border-blue-500 resize-none" 
-                                    required 
-                                    autoFocus
+                                <textarea
+                                    placeholder='{ "name": "🧬 Oxford Track", "phases": [ { "title": "Semester 3", "goals": [{ "text": "Notenschnitt <= 1.5", "completed": false, "continuous": true }] } ] }'
+                                    value={importJsonText}
+                                    onChange={(e) => setImportJsonText(e.target.value)}
+                                    className="field w-full p-3 text-slate-200 text-xs font-mono2 h-56 sm:h-64 resize-none"
+                                    required autoFocus
                                 />
-                                <div class="flex gap-2 pt-1">
-                                    <button type="button" onClick={() => { setIsImportModalOpen(false); setImportJsonText(''); }} class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-sm transition-all">Abbrechen</button>
-                                    <button type="submit" class="flex-1 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-sm font-semibold transition-all">Importieren & Speichern</button>
+                                <div className="flex gap-2">
+                                    <button type="button" onClick={() => { setIsImportModalOpen(false); setImportJsonText(''); }} className="flex-1 py-2.5 rounded-xl text-sm font-medium text-hub-muted hover:text-white transition-all" style={{ background:'rgba(255,255,255,.04)' }}>Abbrechen</button>
+                                    <button type="submit" className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-95" style={{ background:'linear-gradient(180deg, #6c9bff, #4f7cf0)' }}>Importieren &amp; Speichern</button>
                                 </div>
                             </form>
-                        </div>
+                        </ModalShell>
                     )}
 
+                    {/* ---------- TOAST ---------- */}
                     {toast.show && (
-                        <div class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-700 px-4 py-3 rounded-xl flex items-center gap-2 text-sm z-50">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                            <span>{toast.message}</span>
+                        <div className="fixed left-1/2 -translate-x-1/2 z-50 glass px-4 py-3 rounded-2xl flex items-center gap-2.5 text-sm shadow-2xl anim-sheet" style={{ bottom:'max(1.5rem, env(safe-area-inset-bottom))' }}>
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                            </span>
+                            <span className="text-slate-100">{toast.message}</span>
                         </div>
                     )}
                 </div>
             );
         }
 
-        function PhaseGoalForm({ onAddGoal }) {
+        // Wiederverwendbare Modal-Hülle: Desktop = zentriert, Mobile = Bottom-Sheet
+        function ModalShell({ children, onClose, wide }) {
+            return (
+                <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 anim-fade" style={{ background:'rgba(3,6,12,.72)', backdropFilter:'blur(6px)' }} onClick={onClose}>
+                    <div onClick={(e) => e.stopPropagation()}
+                         className={'glass w-full ' + (wide ? 'sm:max-w-xl' : 'sm:max-w-md') + ' p-5 sm:p-6 anim-sheet sm:anim-pop'}
+                         style={{ borderRadius:'24px 24px 0 0', borderBottomLeftRadius:0, borderBottomRightRadius:0, paddingBottom:'max(1.25rem, env(safe-area-inset-bottom))' }}>
+                        <div className="sm:hidden mx-auto mb-3 h-1 w-10 rounded-full" style={{ background:'var(--line)' }}></div>
+                        {children}
+                    </div>
+                </div>
+            );
+        }
+
+        function CloseBtn({ onClick }) {
+            return (
+                <button type="button" onClick={onClick} className="text-hub-faint hover:text-white p-1.5 -mr-1.5 -mt-1 rounded-lg transition-all">
+                    <Icon d={ICONS.close} className="w-4 h-4" />
+                </button>
+            );
+        }
+
+        function PhaseGoalForm({ onAddGoal, accent }) {
             const [text, setText] = useState('');
             const [isContinuous, setIsContinuous] = useState(false);
             return (
-                <form onSubmit={(e) => { e.preventDefault(); if (!text.trim()) return; onAddGoal(text, isContinuous); setText(''); setIsContinuous(false); }} class="mt-4 flex gap-2">
-                    <input type="text" value={text} onChange={(e) => setText(e.target.value)} placeholder="Schritt hinzufügen..." class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none" />
-                    <select value={isContinuous ? 'continuous' : 'once'} onChange={(e) => setIsContinuous(e.target.value === 'continuous')} class="bg-slate-900 border border-slate-800 rounded-lg px-2 text-xs text-slate-400">
+                <form onSubmit={(e) => { e.preventDefault(); if (!text.trim()) return; onAddGoal(text, isContinuous); setText(''); setIsContinuous(false); }} className="mt-3 flex gap-2 items-center">
+                    <input type="text" value={text} onChange={(e) => setText(e.target.value)} placeholder="Schritt hinzufügen…" className="field flex-1 min-w-0 px-3 py-2 text-xs text-slate-200" />
+                    <select value={isContinuous ? 'continuous' : 'once'} onChange={(e) => setIsContinuous(e.target.value === 'continuous')} className="field px-2 py-2 text-xs text-hub-muted shrink-0">
                         <option value="once">Einmalig</option>
                         <option value="continuous">Fortlaufend</option>
                     </select>
-                    <button type="submit" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg">Add</button>
+                    <button type="submit" className="shrink-0 text-white text-xs px-3 py-2 rounded-xl font-semibold transition-all active:scale-95" style={{ background: accent || '#6c9bff' }}>
+                        <Icon d={ICONS.plus} className="w-4 h-4" />
+                    </button>
                 </form>
             );
         }
