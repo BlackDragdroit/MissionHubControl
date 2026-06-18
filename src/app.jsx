@@ -509,7 +509,7 @@ const { useState, useEffect } = React;
                                                                 type="button"
                                                                 title="Abschnitt hier einfügen"
                                                                 className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold opacity-0 group-hover/ins:opacity-100 focus:opacity-100 transition-all hover:scale-110"
-                                                                style={{ left:'11px', background:'var(--card)', border:'1px solid var(--line)', color:'var(--accent)' }}
+                                                                style={{ left:'-25px', background:'var(--card)', border:'1px solid var(--line)', color:'var(--accent)' }}
                                                             >+</button>
                                                             <div className="sm:hidden"></div>
                                                             <button
@@ -517,7 +517,7 @@ const { useState, useEffect } = React;
                                                                 type="button"
                                                                 title="Abschnitt hier einfügen"
                                                                 className="hidden sm:flex absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-6 h-6 rounded-full items-center justify-center text-sm font-bold opacity-0 group-hover/ins:opacity-100 focus:opacity-100 transition-all hover:scale-110"
-                                                                style={{ left:'15px', background:'var(--card)', border:'1px solid var(--line)', color:'var(--accent)' }}
+                                                                style={{ left:'-33px', background:'var(--card)', border:'1px solid var(--line)', color:'var(--accent)' }}
                                                             >+</button>
                                                         </div>
                                                     )}
@@ -529,10 +529,10 @@ const { useState, useEffect } = React;
                                                         onDrop={(e) => { e.preventDefault(); e.currentTarget.classList.remove('drag-zone-active'); onGoalDropHandler(phase.id); }}
                                                     >
                                                         {/* Knoten */}
-                                                        <span className="absolute top-1 -translate-x-1/2 w-[15px] h-[15px] rounded-full flex items-center justify-center" style={{ left:'11px', background:'var(--base)', border:'2px solid ' + t.hex, boxShadow: phaseComplete ? '0 0 12px ' + t.hex : '0 0 0 4px rgba(' + t.rgb + ',.08)' }}>
+                                                        <span className="absolute top-1 -translate-x-1/2 w-[15px] h-[15px] rounded-full flex items-center justify-center" style={{ left:'-25px', background:'var(--base)', border:'2px solid ' + t.hex, boxShadow: phaseComplete ? '0 0 12px ' + t.hex : '0 0 0 4px rgba(' + t.rgb + ',.08)' }}>
                                                             {phaseComplete && <span className="w-1.5 h-1.5 rounded-full" style={{ background:t.hex }}></span>}
                                                         </span>
-                                                        <span className="hidden sm:flex absolute top-1 -translate-x-1/2 w-[15px] h-[15px] rounded-full items-center justify-center" style={{ left:'15px', background:'var(--base)', border:'2px solid ' + t.hex, boxShadow: phaseComplete ? '0 0 12px ' + t.hex : '0 0 0 4px rgba(' + t.rgb + ',.08)' }}>
+                                                        <span className="hidden sm:flex absolute top-1 -translate-x-1/2 w-[15px] h-[15px] rounded-full items-center justify-center" style={{ left:'-33px', background:'var(--base)', border:'2px solid ' + t.hex, boxShadow: phaseComplete ? '0 0 12px ' + t.hex : '0 0 0 4px rgba(' + t.rgb + ',.08)' }}>
                                                             {phaseComplete && <span className="w-1.5 h-1.5 rounded-full" style={{ background:t.hex }}></span>}
                                                         </span>
 
